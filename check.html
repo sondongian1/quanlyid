@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Kiểm tra ID</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>🔍 Kiểm tra ID truy cập</h2>
+  <input type="text" id="idInput" placeholder="Nhập ID...">
+  <button onclick="checkID()">✔️ Kiểm tra</button>
+  <p id="result"></p>
+
+  <script>
+    async function checkID() {
+      const id = document.getElementById("idInput").value.trim();
+      const res = await fetch("ids.json");
+      const data = await res.json();
+      const now = new Date();
+      const updateDate = new Date(data.updated_at);
+      const user = data.users.find(u => u.id === id);
+      let result = "";
+
+      if (!user) result = "❌ ID không tồn tại.";
+      else if (user.days === -1) result = "✅ Hợp lệ (vĩnh viễn)";
+      else {
+        const daysPassed = Math.floor((now - updateDate) / (1000 * 60 * 60 * 24));
+        const daysLeft = user.days - daysPassed;
+        result = daysLeft > 0 ? `✅ Còn ${daysLeft} ngày` : "🔒 Đã hết hạn";
+      }
+
+      document.getElementById("result").innerText = result;
+    }
+  </script>
+</body>
+</html>

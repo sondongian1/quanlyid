@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý ID</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>🔧 Quản lý danh sách ID truy cập</h2>
+  <div>
+    <input type="text" id="idInput" placeholder="Nhập ID...">
+    <input type="number" id="daysInput" placeholder="Số ngày (hoặc -1)">
+    <button onclick="addID()">➕ Thêm</button>
+  </div>
+  <br>
+  <table id="idTable">
+    <thead><tr><th>ID</th><th>Ngày</th><th>Xoá</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <br>
+  <button onclick="download()">💾 Tải về ids.json</button>
+
+  <script>
+    let idList = [];
+
+    function renderTable() {
+      const tbody = document.querySelector("#idTable tbody");
+      tbody.innerHTML = "";
+      idList.forEach((item, i) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${item.id}</td><td>${item.days}</td>
+        <td><button onclick="removeID(${i})">❌</button></td>`;
+        tbody.appendChild(row);
+      });
+    }
+
+    function addID() {
+      const id = document.getElementById("idInput").value.trim();
+      const days = parseInt(document.getElementById("daysInput").value);
+      if (id && !isNaN(days)) {
+        idList.push({ id, days });
+        renderTable();
+      }
+    }
+
+    function removeID(index) {
+      idList.splice(index, 1);
+      renderTable();
+    }
+
+    function download() {
+      const data = {
+        users: idList,
+        updated_at: new Date().toISOString().split("T")[0]
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ids.json";
+      a.click();
+    }
+  </script>
+</body>
+</html>
